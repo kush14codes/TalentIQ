@@ -4,6 +4,7 @@ from passlib.context import CryptContext
 
 from app.database import SessionLocal
 from app.models import User
+from app.schemas import UserRegister, UserLogin
 
 router = APIRouter(
     prefix="/auth",
@@ -14,24 +15,21 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
 @router.post("/register")
-def register(name: str, email: str, password: str):
+def register(user: UserRegister):
 
     db: Session = SessionLocal()
 
-    # Check if user already exists
-    existing_user = db.query(User).filter(User.email == email).first()
+    existing_user = db.query(User).filter(User.email == user.email).first()
 
     if existing_user:
         db.close()
         raise HTTPException(status_code=400, detail="Email already exists")
 
-    # Hash the password
-    hashed_password = pwd_context.hash(password)
+    hashed_password = pwd_context.hash(user.password)
 
-    # Create new user
     new_user = User(
-        name=name,
-        email=email,
+        name=user.name,
+        email=user.email,
         password=hashed_password
     )
 
@@ -43,4 +41,27 @@ def register(name: str, email: str, password: str):
 
     return {
         "message": "User Registered Successfully"
+    }
+
+
+@router.post("/login")
+def login(user: UserLogin):
+
+    db: Session = SessionLocal()
+
+    existing_user = db.query(User).filter(User.email == user.email).first()
+
+    if not existing_user:
+        db.close()
+        raise HTTPException(status_code=404, detail="User not found")
+
+    if not pwd_context.verify(user.password, existing_user.password):
+        db.close()
+        raise HTTPException(status_code=401, detail="Invalid Password")
+
+    db.close()
+
+    return {
+        "message": "Login Successful",
+        "user": existing_user.name
     }
