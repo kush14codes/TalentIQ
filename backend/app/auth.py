@@ -1,29 +1,38 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
 from sqlalchemy.orm import Session
 from passlib.context import CryptContext
 
-from app.database import SessionLocal
 from app.models import User
 from app.schemas import UserRegister, UserLogin
+from app.security import create_access_token
+from app.dependencies import get_db
 
 router = APIRouter(
     prefix="/auth",
     tags=["Authentication"]
 )
 
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+pwd_context = CryptContext(
+    schemes=["bcrypt"],
+    deprecated="auto"
+)
 
 
 @router.post("/register")
-def register(user: UserRegister):
+def register(
+    user: UserRegister,
+    db: Session = Depends(get_db)
+):
 
-    db: Session = SessionLocal()
-
-    existing_user = db.query(User).filter(User.email == user.email).first()
+    existing_user = db.query(User).filter(
+        User.email == user.email
+    ).first()
 
     if existing_user:
-        db.close()
-        raise HTTPException(status_code=400, detail="Email already exists")
+        raise HTTPException(
+            status_code=400,
+            detail="Email already exists"
+        )
 
     hashed_password = pwd_context.hash(user.password)
 
@@ -37,31 +46,47 @@ def register(user: UserRegister):
     db.commit()
     db.refresh(new_user)
 
-    db.close()
-
     return {
         "message": "User Registered Successfully"
     }
 
 
 @router.post("/login")
-def login(user: UserLogin):
+def login(
+    user: UserLogin,
+    db: Session = Depends(get_db)
+):
 
-    db: Session = SessionLocal()
-
-    existing_user = db.query(User).filter(User.email == user.email).first()
+    existing_user = db.query(User).filter(
+        User.email == user.email
+    ).first()
 
     if not existing_user:
-        db.close()
-        raise HTTPException(status_code=404, detail="User not found")
+        raise HTTPException(
+            status_code=404,
+            detail="User not found"
+        )
 
-    if not pwd_context.verify(user.password, existing_user.password):
-        db.close()
-        raise HTTPException(status_code=401, detail="Invalid Password")
+    if not pwd_context.verify(
+        user.password,
+        existing_user.password
+    ):
+        raise HTTPException(
+            status_code=401,
+            detail="Invalid Password"
+        )
 
-    db.close()
+    access_token = create_access_token(
+        data={
+            "sub": existing_user.email
+        }
+    )
 
     return {
-        "message": "Login Successful",
-        "user": existing_user.name
+        "access_token": access_token,
+        "token_type": "bearer",
+        "user": {
+            "name": existing_user.name,
+            "email": existing_user.email
+        }
     }

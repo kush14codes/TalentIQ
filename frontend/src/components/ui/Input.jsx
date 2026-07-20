@@ -1,28 +1,50 @@
-function Input({ label, ...props }) {
+function Input({
+  label,
+  type = "text",
+  name,
+  value,
+  onChange,
+  placeholder,
+  autoComplete = "off",
+  required = false,
+}) {
   return (
-    <div className="space-y-2">
-      <label className="text-sm font-medium text-slate-300">
-        {label}
-      </label>
+    <div>
+      {label && (
+        <label
+          htmlFor={name}
+          className="block mb-2 text-sm font-medium text-slate-300"
+        >
+          {label}
+        </label>
+      )}
 
       <input
+        id={name}
+        type={type}
+        name={name}
+        value={value}
+        onChange={onChange}
+        placeholder={placeholder}
+        autoComplete={autoComplete}
+        required={required}
         className="
-        w-full
-        rounded-xl
-        border
-        border-slate-700
-        bg-slate-900
-        px-4
-        py-3
-        text-white
-        outline-none
-        transition
-
-        focus:border-blue-500
-        focus:ring-2
-        focus:ring-blue-500/20
+          w-full
+          rounded-xl
+          border
+          border-white/10
+          bg-slate-900/70
+          px-4
+          py-3
+          text-white
+          placeholder:text-slate-500
+          outline-none
+          transition-all
+          duration-200
+          focus:border-cyan-500
+          focus:ring-2
+          focus:ring-cyan-500/20
         "
-        {...props}
       />
     </div>
   );

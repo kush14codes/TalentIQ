@@ -1,56 +1,42 @@
-import { motion } from "framer-motion";
+import { Loader2 } from "lucide-react";
 
 function Button({
   children,
+  type = "button",
+  onClick,
+  loading = false,
+  disabled = false,
   variant = "primary",
   className = "",
-  type = "button",
-  ...props
 }) {
+  const baseClasses =
+    "w-full rounded-xl py-3 px-4 font-semibold transition-all duration-200 flex items-center justify-center gap-2 disabled:cursor-not-allowed disabled:opacity-60";
+
   const variants = {
     primary:
-      "bg-gradient-to-r from-cyan-500 via-blue-500 to-violet-600 text-white shadow-xl shadow-cyan-500/20 hover:shadow-cyan-500/40",
-
+      "bg-cyan-500 text-slate-900 hover:bg-cyan-400",
     secondary:
-      "border border-white/10 bg-white/5 text-white backdrop-blur-xl hover:bg-white/10",
-
-    ghost:
-      "bg-transparent text-slate-300 hover:text-white hover:bg-white/5",
+      "bg-slate-800 text-white border border-white/10 hover:bg-slate-700",
+    danger:
+      "bg-red-600 text-white hover:bg-red-500",
   };
 
   return (
-    <motion.button
+    <button
       type={type}
-      whileHover={{
-        scale: 1.04,
-        y: -2,
-      }}
-      whileTap={{
-        scale: 0.98,
-      }}
-      transition={{
-        type: "spring",
-        stiffness: 300,
-        damping: 18,
-      }}
-      className={`
-        inline-flex
-        items-center
-        justify-center
-        gap-2
-        rounded-2xl
-        px-7
-        py-3.5
-        font-semibold
-        transition-all
-        duration-300
-        ${variants[variant]}
-        ${className}
-      `}
-      {...props}
+      onClick={onClick}
+      disabled={loading || disabled}
+      className={`${baseClasses} ${variants[variant]} ${className}`}
     >
-      {children}
-    </motion.button>
+      {loading ? (
+        <>
+          <Loader2 className="animate-spin" size={18} />
+          Please wait...
+        </>
+      ) : (
+        children
+      )}
+    </button>
   );
 }
 

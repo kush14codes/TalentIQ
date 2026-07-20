@@ -1,0 +1,43 @@
+Python
+SQL
+Pandas
+NumPy
+Scikit-Learn
+Machine Learning
+Deep Learning
+NLP
+FastAPI
+Flask
+Django
+React
+Java
+C++
+Git
+GitHub
+Docker
+AWS
+Azure
+TensorFlow
+PyTorch
+Power BI
+Tableau
+Streamlit
+PostgreSQL
+MySQL
+MongoDB
+Redis
+Spark
+Hadoop
+Kafka
+Airflow
+Databricks
+Snowflake
+OpenCV
+Matplotlib
+Seaborn
+Statistics
+Feature Engineering
+Model Evaluation
+Data Analysis
+Data Cleaning
+EDA
