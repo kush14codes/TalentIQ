@@ -1,13 +1,16 @@
 import { useState } from "react";
 
 import DashboardLayout from "../components/layout/DashboardLayout";
+
 import ResumeUploader from "../components/resume/ResumeUploader";
 import JobDescriptionInput from "../components/resume/JobDescriptionInput";
 import LoadingAnalysis from "../components/resume/LoadingAnalysis";
+
 import ATSScoreCard from "../components/resume/ATSScoreCard";
 import CandidateCard from "../components/resume/CandidateCard";
 import SkillsCard from "../components/resume/SkillsCard";
 import RecommendationsCard from "../components/resume/RecommendationsCard";
+import SemanticMatchesCard from "../components/resume/SemanticMatchesCard";
 
 import { analyzeResume } from "../services/resumeApi";
 
@@ -50,7 +53,7 @@ function ResumeAnalysis() {
 
       setError(
         err.response?.data?.detail ||
-        "Unable to analyze resume. Please try again."
+          "Unable to analyze resume. Please try again."
       );
     } finally {
       setLoading(false);
@@ -58,13 +61,14 @@ function ResumeAnalysis() {
   };
 
   const canAnalyze =
-    file !== null &&
+    file &&
     jobDescription.trim().length > 0 &&
     !loading;
 
   return (
     <DashboardLayout>
-      {/* Header */}
+
+      {/* Page Header */}
 
       <div className="mb-10">
 
@@ -73,14 +77,14 @@ function ResumeAnalysis() {
         </h1>
 
         <p className="mt-4 max-w-3xl text-lg text-slate-400">
-          Upload your resume, paste the job description,
-          and let TalentIQ evaluate your ATS compatibility
-          using AI-powered resume intelligence.
+          Upload your resume and compare it with any
+          job description using TalentIQ's semantic AI
+          matching engine.
         </p>
 
       </div>
 
-      {/* Input */}
+      {/* Input Section */}
 
       <div className="space-y-8">
 
@@ -99,7 +103,9 @@ function ResumeAnalysis() {
           disabled={!canAnalyze}
           className="w-full rounded-2xl bg-cyan-500 py-4 text-lg font-bold text-slate-950 transition hover:bg-cyan-400 disabled:cursor-not-allowed disabled:opacity-50"
         >
-          {loading ? "Analyzing Resume..." : "Analyze Resume"}
+          {loading
+            ? "Analyzing Resume..."
+            : "Analyze Resume"}
         </button>
 
         {error && (
@@ -121,15 +127,30 @@ function ResumeAnalysis() {
       {/* Results */}
 
       {!loading && result && (
+
         <div className="mt-12 space-y-8">
+
+          {/* ATS Score */}
 
           <ATSScoreCard
             score={result.ats.score}
           />
 
+          {/* Candidate */}
+
           <CandidateCard
             candidate={result.candidate}
           />
+
+          {/* Semantic Matches */}
+
+          <SemanticMatchesCard
+            semanticMatches={
+              result.ats.semantic_matches || []
+            }
+          />
+
+          {/* Skills */}
 
           <div className="grid gap-8 lg:grid-cols-2">
 
@@ -147,12 +168,75 @@ function ResumeAnalysis() {
 
           </div>
 
+          {/* Recommendations */}
+
           <RecommendationsCard
-            recommendations={result.recommendations}
+            recommendations={
+              result.recommendations || []
+            }
           />
 
+          {/* Footer Stats */}
+
+          <div className="rounded-3xl border border-white/10 bg-white/5 p-8">
+
+            <h2 className="mb-6 text-2xl font-bold text-white">
+              Semantic AI Summary
+            </h2>
+
+            <div className="grid gap-6 md:grid-cols-3">
+
+              <div className="rounded-2xl bg-slate-900/70 p-6">
+
+                <p className="text-sm text-slate-400">
+                  ATS Score
+                </p>
+
+                <h3 className="mt-2 text-3xl font-bold text-cyan-400">
+                  {result.ats.score}%
+                </h3>
+
+              </div>
+
+              <div className="rounded-2xl bg-slate-900/70 p-6">
+
+                <p className="text-sm text-slate-400">
+                  Average Similarity
+                </p>
+
+                <h3 className="mt-2 text-3xl font-bold text-violet-400">
+                  {result.ats.average_similarity
+                    ? `${(
+                        result.ats.average_similarity *
+                        100
+                      ).toFixed(1)}%`
+                    : "0%"}
+                </h3>
+
+              </div>
+
+              <div className="rounded-2xl bg-slate-900/70 p-6">
+
+                <p className="text-sm text-slate-400">
+                  Semantic Matches
+                </p>
+
+                <h3 className="mt-2 text-3xl font-bold text-green-400">
+                  {result.ats.semantic_matches
+                    ? result.ats.semantic_matches.length
+                    : 0}
+                </h3>
+
+              </div>
+
+            </div>
+
+          </div>
+
         </div>
+
       )}
+
     </DashboardLayout>
   );
 }
