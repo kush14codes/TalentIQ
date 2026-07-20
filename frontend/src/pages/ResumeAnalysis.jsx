@@ -12,6 +12,11 @@ import SkillsCard from "../components/resume/SkillsCard";
 import RecommendationsCard from "../components/resume/RecommendationsCard";
 import SemanticMatchesCard from "../components/resume/SemanticMatchesCard";
 
+import AIResumeSummaryCard from "../components/resume/AIResumeSummaryCard";
+import RecruiterReviewCard from "../components/resume/RecruiterReviewCard";
+import AISuggestionsCard from "../components/resume/AISuggestionsCard";
+import InterviewQuestionsCard from "../components/resume/InterviewQuestionsCard";
+
 import { analyzeResume } from "../services/resumeApi";
 
 function ResumeAnalysis() {
@@ -140,6 +145,30 @@ function ResumeAnalysis() {
 
           <CandidateCard
             candidate={result.candidate}
+          />
+
+          {/* AI Resume Summary */}
+
+          <AIResumeSummaryCard
+            summary={result.ai?.summary}
+          />
+
+          {/* Recruiter Review */}
+
+          <RecruiterReviewCard
+            review={result.ai?.review}
+          />
+
+          {/* AI Suggestions */}
+
+          <AISuggestionsCard
+            suggestions={result.ai?.suggestions}
+          />
+
+          {/* Interview Questions */}
+
+          <InterviewQuestionsCard
+            questions={result.ai?.interview_questions}
           />
 
           {/* Semantic Matches */}

@@ -7,6 +7,7 @@ from app.services.parser import ResumeParser
 from app.services.resume_engine import ResumeEngine
 from app.services.ats_engine import ATSEngine
 from app.services.recommendation_engine import RecommendationEngine
+from app.services.llm_engine import LLMEngine
 
 router = APIRouter(
     prefix="/resume",
@@ -139,6 +140,17 @@ async def analyze_resume(
         candidate=resume_analysis,
     )
 
+    ai_analysis = LLMEngine.generate_complete_analysis(
+        candidate={
+            "name": resume_analysis.get("name"),
+            "email": resume_analysis.get("email"),
+            "phone": resume_analysis.get("phone"),
+        },
+        ats_score=ats_result["score"],
+        matched_skills=ats_result["matched_skills"],
+        missing_skills=ats_result["missing_skills"],
+    )
+
     return {
         "success": True,
         "message": "Resume analyzed successfully.",
@@ -151,5 +163,6 @@ async def analyze_resume(
         "job_skills": jd_analysis["skills"],
         "ats": ats_result,
         "recommendations": recommendations,
+        "ai": ai_analysis.model_dump(),
         "stored_filename": unique_filename
     }
