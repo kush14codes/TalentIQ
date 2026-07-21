@@ -1,3 +1,6 @@
+import os
+
+from huggingface_hub import login
 from sentence_transformers import SentenceTransformer
 from sklearn.metrics.pairwise import cosine_similarity
 
@@ -17,6 +20,15 @@ class EmbeddingEngine:
         """
 
         if cls._model is None:
+
+            token = os.getenv("HF_TOKEN")
+
+            if token:
+                login(
+                    token=token,
+                    add_to_git_credential=False
+                )
+
             cls._model = SentenceTransformer(
                 "sentence-transformers/all-MiniLM-L6-v2"
             )
