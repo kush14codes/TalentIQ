@@ -55,14 +55,16 @@ const features = [
 
 function Features() {
   return (
-    <section className="relative py-28">
-
+    <section
+      id="features"
+      className="relative py-28 scroll-mt-32"
+    >
       <div className="mx-auto max-w-7xl px-6">
 
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: .7 }}
+          transition={{ duration: 0.7 }}
           viewport={{ once: true }}
           className="mx-auto mb-20 max-w-3xl text-center"
         >
@@ -98,8 +100,8 @@ function Features() {
                 initial={{ opacity: 0, y: 40 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{
-                  delay: index * .08,
-                  duration: .5
+                  delay: index * 0.08,
+                  duration: 0.5,
                 }}
                 viewport={{ once: true }}
                 whileHover={{
@@ -136,7 +138,6 @@ function Features() {
         </div>
 
       </div>
-
     </section>
   );
 }

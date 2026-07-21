@@ -42,8 +42,10 @@ const steps = [
 
 function HowItWorks() {
   return (
-    <section className="relative py-28">
-
+    <section
+      id="workflow"
+      className="relative py-28 scroll-mt-32"
+    >
       <div className="mx-auto max-w-7xl px-6">
 
         <motion.div
@@ -69,6 +71,7 @@ function HowItWorks() {
         <div className="relative">
 
           {/* Vertical line */}
+
           <div className="absolute left-1/2 top-0 hidden h-full w-1 -translate-x-1/2 rounded-full bg-gradient-to-b from-cyan-500 via-blue-500 to-violet-500 lg:block" />
 
           <div className="space-y-16">
@@ -90,8 +93,8 @@ function HowItWorks() {
                   }}
                   viewport={{ once: true }}
                   transition={{
-                    duration: .6,
-                    delay: index * .15,
+                    duration: 0.6,
+                    delay: index * 0.15,
                   }}
                   className={`flex items-center ${
                     index % 2 === 0
@@ -128,13 +131,14 @@ function HowItWorks() {
 
                 </motion.div>
               );
+
             })}
+
           </div>
 
         </div>
 
       </div>
-
     </section>
   );
 }

@@ -1,4 +1,4 @@
-    import { motion } from "framer-motion";
+import { motion } from "framer-motion";
 import { Star } from "lucide-react";
 
 const testimonials = [
@@ -27,20 +27,28 @@ const testimonials = [
 
 function Testimonials() {
   return (
-    <section className="py-28">
+    <section
+      id="testimonials"
+      className="py-28 scroll-mt-32"
+    >
       <div className="mx-auto max-w-7xl px-6">
 
         <div className="mb-20 text-center">
+
           <p className="mb-4 font-semibold uppercase tracking-[0.3em] text-cyan-400">
             Testimonials
           </p>
 
           <h2 className="text-5xl font-black">
+
             Loved By
+
             <span className="block bg-gradient-to-r from-cyan-400 to-violet-500 bg-clip-text text-transparent">
               Job Seekers
             </span>
+
           </h2>
+
         </div>
 
         <div className="grid gap-8 lg:grid-cols-3">
@@ -51,20 +59,27 @@ function Testimonials() {
               key={item.name}
               initial={{ opacity: 0, y: 40 }}
               whileInView={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.12 }}
+              transition={{
+                delay: index * 0.12,
+                duration: 0.5,
+              }}
               viewport={{ once: true }}
               whileHover={{ y: -8 }}
               className="rounded-3xl border border-white/10 bg-white/5 p-8 backdrop-blur-xl"
             >
 
               <div className="mb-5 flex gap-1">
+
                 {[...Array(5)].map((_, i) => (
+
                   <Star
                     key={i}
                     size={18}
                     className="fill-yellow-400 text-yellow-400"
                   />
+
                 ))}
+
               </div>
 
               <p className="leading-8 text-slate-300">
@@ -79,6 +94,7 @@ function Testimonials() {
 
                 <p className="text-slate-400">
                   {item.role}
+                  {item.company && ` • ${item.company}`}
                 </p>
 
               </div>

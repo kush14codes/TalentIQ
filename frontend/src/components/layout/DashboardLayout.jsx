@@ -1,10 +1,18 @@
-import { Outlet, useNavigate } from "react-router-dom";
-import { LogOut, User } from "lucide-react";
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
+import {
+  LogOut,
+  User,
+  LayoutDashboard,
+  FileSearch,
+  Home,
+} from "lucide-react";
 
 import { useAuth } from "../../contexts/AuthContext";
 
 function DashboardLayout({ children }) {
   const navigate = useNavigate();
+
+  const location = useLocation();
 
   const { user, logout } = useAuth();
 
@@ -13,12 +21,30 @@ function DashboardLayout({ children }) {
     navigate("/login");
   };
 
+  const navItems = [
+    {
+      label: "Home",
+      icon: <Home size={18} />,
+      route: "/",
+    },
+    {
+      label: "Dashboard",
+      icon: <LayoutDashboard size={18} />,
+      route: "/dashboard",
+    },
+    {
+      label: "Resume Analysis",
+      icon: <FileSearch size={18} />,
+      route: "/resume-analysis",
+    },
+  ];
+
   return (
     <div className="min-h-screen bg-slate-950 text-white">
 
       {/* Background Glow */}
 
-      <div className="fixed inset-0 overflow-hidden pointer-events-none">
+      <div className="pointer-events-none fixed inset-0 overflow-hidden">
 
         <div className="absolute -top-40 left-20 h-96 w-96 rounded-full bg-cyan-500/20 blur-3xl" />
 
@@ -32,12 +58,42 @@ function DashboardLayout({ children }) {
 
         <div className="mx-auto flex max-w-7xl items-center justify-between px-8 py-5">
 
+          {/* Logo */}
+
           <button
-            onClick={() => navigate("/dashboard")}
+            onClick={() => navigate("/")}
             className="text-3xl font-bold text-cyan-400 transition hover:text-cyan-300"
           >
             TalentIQ
           </button>
+
+          {/* Navigation */}
+
+          <nav className="hidden items-center gap-3 lg:flex">
+
+            {navItems.map((item) => (
+
+              <button
+                key={item.route}
+                onClick={() => navigate(item.route)}
+                className={`flex items-center gap-2 rounded-xl px-4 py-2 transition ${
+                  location.pathname === item.route
+                    ? "bg-cyan-500 text-slate-950"
+                    : "text-slate-300 hover:bg-white/10 hover:text-white"
+                }`}
+              >
+
+                {item.icon}
+
+                {item.label}
+
+              </button>
+
+            ))}
+
+          </nav>
+
+          {/* Right Side */}
 
           <div className="flex items-center gap-4">
 
@@ -46,7 +102,9 @@ function DashboardLayout({ children }) {
               <User size={18} />
 
               <span className="text-sm font-medium">
+
                 {user?.name || "User"}
+
               </span>
 
             </div>
@@ -55,8 +113,11 @@ function DashboardLayout({ children }) {
               onClick={handleLogout}
               className="flex items-center gap-2 rounded-xl bg-red-600 px-4 py-2 font-medium transition hover:bg-red-500"
             >
+
               <LogOut size={18} />
+
               Logout
+
             </button>
 
           </div>

@@ -5,7 +5,11 @@ import {
   BarChart3,
   Sparkles,
   FileSearch,
-  Clock,
+ CheckCircle2,
+  Bot,
+  Target,
+  FileText,
+  Lightbulb,
 } from "lucide-react";
 
 import DashboardLayout from "../components/layout/DashboardLayout";
@@ -20,22 +24,61 @@ function Dashboard() {
     {
       title: "AI Resume Analysis",
       description:
-        "Upload your resume and compare it with any job description using our AI-powered ATS engine.",
+        "Analyze your resume using TalentIQ's AI engine.",
       icon: <Brain size={30} />,
-      action: "Analyze Resume",
+      action: "Start Analysis",
       route: "/resume-analysis",
     },
     {
-      title: "ATS Score",
+      title: "General ATS Score",
       description:
-        "See how well your resume matches the job requirements before applying.",
+        "Evaluate your resume even without a Job Description.",
       icon: <BarChart3 size={30} />,
+      action: "Check ATS",
+      route: "/resume-analysis",
+    },
+    {
+      title: "Semantic ATS Match",
+      description:
+        "Compare your resume against a specific Job Description.",
+      icon: <Target size={30} />,
+      action: "Match Resume",
+      route: "/resume-analysis",
     },
     {
       title: "Skill Gap Detection",
       description:
-        "Discover which skills are missing and what recruiters expect.",
+        "Identify missing skills and recruiter expectations.",
       icon: <FileSearch size={30} />,
+      action: "Analyze Skills",
+      route: "/resume-analysis",
+    },
+  ];
+
+  const capabilities = [
+    {
+      icon: <CheckCircle2 className="text-green-400" />,
+      title: "General ATS Analysis",
+    },
+    {
+      icon: <Target className="text-cyan-400" />,
+      title: "Semantic ATS Matching",
+    },
+    {
+      icon: <Bot className="text-violet-400" />,
+      title: "AI Resume Summary",
+    },
+    {
+      icon: <FileText className="text-blue-400" />,
+      title: "Recruiter Review",
+    },
+    {
+      icon: <Lightbulb className="text-yellow-400" />,
+      title: "AI Suggestions",
+    },
+    {
+      icon: <Brain className="text-pink-400" />,
+      title: "Interview Questions",
     },
   ];
 
@@ -71,9 +114,8 @@ function Dashboard() {
 
         <p className="mt-5 max-w-3xl text-lg text-slate-400">
 
-          Optimize your resume with AI, compare it against any job description,
-          calculate your ATS score, identify missing skills, and receive
-          intelligent recommendations.
+          Analyze resumes, improve ATS compatibility, compare against job
+          descriptions and receive AI-powered recruiter feedback in seconds.
 
         </p>
 
@@ -91,14 +133,15 @@ function Dashboard() {
 
               <h2 className="text-3xl font-bold">
 
-                Analyze Your Resume
+                Start Your Resume Analysis
 
               </h2>
 
               <p className="mt-3 max-w-xl text-slate-300">
 
-                Upload your resume, paste the job description, and let TalentIQ
-                instantly calculate your ATS score with AI.
+                Upload your resume to receive a General ATS Score or
+                optionally provide a Job Description for Semantic ATS
+                matching.
 
               </p>
 
@@ -109,7 +152,7 @@ function Dashboard() {
               className="flex items-center justify-center gap-3 rounded-2xl bg-cyan-500 px-8 py-4 text-lg font-semibold text-slate-950 transition hover:scale-105 hover:bg-cyan-400"
             >
 
-              Start Analysis
+              Analyze Resume
 
               <ArrowRight size={22} />
 
@@ -131,7 +174,7 @@ function Dashboard() {
 
         </h2>
 
-        <div className="grid gap-8 lg:grid-cols-3">
+        <div className="grid gap-8 lg:grid-cols-2">
 
           {features.map((feature) => (
 
@@ -158,20 +201,16 @@ function Dashboard() {
 
               </p>
 
-              {feature.route && (
+              <button
+                onClick={() => navigate(feature.route)}
+                className="mt-8 flex items-center gap-2 text-cyan-400 transition hover:gap-3"
+              >
 
-                <button
-                  onClick={() => navigate(feature.route)}
-                  className="mt-8 flex items-center gap-2 text-cyan-400 transition hover:gap-3"
-                >
+                {feature.action}
 
-                  {feature.action}
+                <ArrowRight size={18} />
 
-                  <ArrowRight size={18} />
-
-                </button>
-
-              )}
+              </button>
 
             </div>
 
@@ -181,37 +220,40 @@ function Dashboard() {
 
       </section>
 
-      {/* Coming Soon */}
+      {/* Platform Capabilities */}
 
       <section>
 
         <div className="rounded-3xl border border-white/10 bg-white/5 p-8">
 
-          <div className="mb-5 flex items-center gap-3">
+          <h2 className="mb-8 text-3xl font-bold">
 
-            <Clock className="text-cyan-400" />
+            Platform Capabilities
 
-            <h2 className="text-2xl font-bold">
+          </h2>
 
-              Coming in Sprint 6
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
 
-            </h2>
+            {capabilities.map((item) => (
+
+              <div
+                key={item.title}
+                className="flex items-center gap-4 rounded-2xl border border-white/10 bg-slate-900/50 p-5"
+              >
+
+                {item.icon}
+
+                <span className="font-medium text-white">
+
+                  {item.title}
+
+                </span>
+
+              </div>
+
+            ))}
 
           </div>
-
-          <ul className="space-y-3 text-slate-400">
-
-            <li>• Semantic AI skill matching using embeddings</li>
-
-            <li>• Resume improvement recommendations</li>
-
-            <li>• AI-generated resume summary</li>
-
-            <li>• Recruiter feedback simulation</li>
-
-            <li>• Interview question generation</li>
-
-          </ul>
 
         </div>
 

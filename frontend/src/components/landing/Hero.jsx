@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import { ArrowRight, PlayCircle, Sparkles } from "lucide-react";
+import { Link } from "react-router-dom";
 
 import Container from "../ui/Container";
 import Button from "../ui/Button";
@@ -12,14 +13,19 @@ function Hero() {
         <div className="grid min-h-[88vh] items-center gap-16 py-12 lg:grid-cols-2">
 
           {/* Left Side */}
+
           <motion.div
             initial={{ opacity: 0, x: -40 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8 }}
           >
+
             <div className="mb-8 inline-flex items-center gap-2 rounded-full border border-cyan-500/20 bg-cyan-500/10 px-5 py-2 backdrop-blur-xl">
 
-              <Sparkles size={16} className="text-cyan-400" />
+              <Sparkles
+                size={16}
+                className="text-cyan-400"
+              />
 
               <span className="text-sm font-medium tracking-wide text-cyan-300">
                 AI Powered Resume Intelligence
@@ -32,9 +38,7 @@ function Hero() {
               Land Your
 
               <span className="block bg-gradient-to-r from-cyan-400 via-blue-400 to-violet-500 bg-clip-text text-transparent">
-
                 Dream Job
-
               </span>
 
               <span className="block">
@@ -57,26 +61,36 @@ function Hero() {
 
             </p>
 
+            {/* Buttons */}
+
             <div className="mt-12 flex flex-wrap gap-5">
 
-              <Button className="group">
+              <Link to="/dashboard">
 
-                Analyze Resume
+                <Button className="group">
 
-                <ArrowRight
-                  size={18}
-                  className="transition-transform duration-300 group-hover:translate-x-1"
-                />
+                  Analyze Resume
 
-              </Button>
+                  <ArrowRight
+                    size={18}
+                    className="transition-transform duration-300 group-hover:translate-x-1"
+                  />
 
-              <Button variant="secondary">
+                </Button>
 
-                <PlayCircle size={18} />
+              </Link>
 
-                Watch Demo
+              <a href="#workflow">
 
-              </Button>
+                <Button variant="secondary">
+
+                  <PlayCircle size={18} />
+
+                  Watch Demo
+
+                </Button>
+
+              </a>
 
             </div>
 
@@ -121,6 +135,7 @@ function Hero() {
               </div>
 
             </div>
+
           </motion.div>
 
           {/* Right Side */}
