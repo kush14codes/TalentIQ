@@ -1,34 +1,4 @@
-print("========== RESUME.PY START ==========")
 
-print("1")
-import os
-
-print("2")
-import uuid
-
-print("3")
-from fastapi import APIRouter, File, Form, HTTPException, UploadFile
-
-print("4")
-from app.services.parser import ResumeParser
-
-print("5")
-from app.services.resume_engine import ResumeEngine
-
-print("6")
-from app.services.ats_engine import ATSEngine
-
-print("7")
-from app.services.general_ats_engine import GeneralATSEngine
-
-print("8")
-from app.services.recommendation_engine import RecommendationEngine
-
-print("9")
-from app.services.llm_engine import LLMEngine
-
-print("10")
-print("========== ALL IMPORTS COMPLETED ==========")
 
 router = APIRouter(
     prefix="/resume",
