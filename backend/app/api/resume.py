@@ -1,3 +1,14 @@
+import os
+import uuid
+
+from fastapi import APIRouter, File, Form, HTTPException, UploadFile
+
+from app.services.parser import ResumeParser
+from app.services.resume_engine import ResumeEngine
+from app.services.ats_engine import ATSEngine
+from app.services.general_ats_engine import GeneralATSEngine
+from app.services.recommendation_engine import RecommendationEngine
+from app.services.llm_engine import LLMEngine
 
 
 router = APIRouter(
@@ -114,6 +125,10 @@ async def analyze_resume(
         "phone": resume_analysis.get("phone"),
     }
 
+    # =====================================================
+    # MODE 1 : SEMANTIC ATS (Resume + Job Description)
+    # =====================================================
+
     if job_description.strip():
 
         jd_analysis = ResumeEngine.process(
@@ -153,6 +168,10 @@ async def analyze_resume(
             "ai": ai_analysis.model_dump(),
             "stored_filename": unique_filename
         }
+
+    # =====================================================
+    # MODE 2 : GENERAL ATS (Resume Only)
+    # =====================================================
 
     ats_result = GeneralATSEngine.evaluate(
         resume_analysis,
