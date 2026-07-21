@@ -69,21 +69,28 @@ class LLMEngine:
         ats_score,
         matched_skills,
         missing_skills,
+        mode="semantic",
     ) -> AIAnalysisResponse:
         """
         Generates complete AI analysis.
+
+        mode:
+            semantic -> Resume + Job Description
+            general  -> Resume Only
         """
 
         prompt = PromptTemplates.complete_analysis(
-            candidate,
-            ats_score,
-            matched_skills,
-            missing_skills,
+            candidate=candidate,
+            ats_score=ats_score,
+            matched_skills=matched_skills,
+            missing_skills=missing_skills,
+            mode=mode,
         )
 
         response = cls._generate(prompt)
 
         try:
+
             parsed = json.loads(response)
 
             return AIAnalysisResponse(**parsed)

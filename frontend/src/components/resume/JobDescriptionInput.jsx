@@ -15,7 +15,7 @@ function JobDescriptionInput({
         />
 
         <h2 className="text-2xl font-bold text-white">
-          Job Description
+          Job Description <span className="text-cyan-400">(Optional)</span>
         </h2>
 
       </div>
@@ -26,7 +26,7 @@ function JobDescriptionInput({
         onChange={(e) =>
           setJobDescription(e.target.value)
         }
-        placeholder="Paste the complete job description here..."
+        placeholder="Paste the job description here for Semantic ATS analysis (optional)..."
         className="
           w-full
           resize-none
@@ -48,7 +48,7 @@ function JobDescriptionInput({
       <div className="mt-4 flex items-center justify-between text-sm">
 
         <p className="text-slate-500">
-          Paste the complete job posting for better ATS analysis.
+          Leave this empty to get a <span className="font-semibold text-cyan-400">General ATS Score</span>, or paste a job description to receive a <span className="font-semibold text-cyan-400">Semantic ATS Match Score</span>.
         </p>
 
         <span className="text-slate-400">

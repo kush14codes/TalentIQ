@@ -18,6 +18,52 @@ class ResumeEngine:
     _nlp = None
     _skills = None
 
+    EDUCATION_KEYWORDS = [
+        "b.tech",
+        "btech",
+        "b.e",
+        "be",
+        "m.tech",
+        "mtech",
+        "m.e",
+        "me",
+        "b.sc",
+        "bsc",
+        "m.sc",
+        "msc",
+        "bca",
+        "mca",
+        "bachelor",
+        "master",
+        "university",
+        "college",
+        "cgpa",
+        "gpa",
+        "degree",
+    ]
+
+    PROJECT_KEYWORDS = [
+        "project",
+        "projects",
+        "developed",
+        "built",
+        "created",
+        "implemented",
+        "designed",
+    ]
+
+    EXPERIENCE_KEYWORDS = [
+        "experience",
+        "intern",
+        "internship",
+        "software engineer",
+        "developer",
+        "analyst",
+        "worked",
+        "employment",
+        "professional experience",
+    ]
+
     @classmethod
     def get_nlp(cls):
         if cls._nlp is None:
@@ -45,16 +91,17 @@ class ResumeEngine:
     @classmethod
     def process(cls, text: str, is_resume: bool = True):
         """
-        Process any text.
-
         Resume:
             - name
             - email
             - phone
             - skills
+            - education
+            - projects
+            - experience
 
         Job Description:
-            - skills only
+            - skills
         """
 
         result = {
@@ -65,7 +112,10 @@ class ResumeEngine:
             result.update({
                 "name": cls.extract_name(text),
                 "email": ResumeExtractor.extract_email(text),
-                "phone": ResumeExtractor.extract_phone(text)
+                "phone": ResumeExtractor.extract_phone(text),
+                "education": cls.extract_education(text),
+                "projects": cls.extract_projects(text),
+                "experience": cls.extract_experience(text),
             })
 
         return result
@@ -73,9 +123,7 @@ class ResumeEngine:
     @classmethod
     def extract_name(cls, text: str):
 
-        first_lines = "\n".join(
-            text.splitlines()[:5]
-        )
+        first_lines = "\n".join(text.splitlines()[:5])
 
         doc = cls.get_nlp()(first_lines)
 
@@ -107,3 +155,49 @@ class ResumeEngine:
                 found.append(skill)
 
         return sorted(set(found))
+
+    @classmethod
+    def extract_education(cls, text: str):
+
+        text_lower = text.lower()
+
+        for keyword in cls.EDUCATION_KEYWORDS:
+            if keyword in text_lower:
+                return "Education Found"
+
+        return ""
+
+    @classmethod
+    def extract_projects(cls, text: str):
+
+        text_lower = text.lower()
+
+        projects = []
+
+        lines = text.splitlines()
+
+        for line in lines:
+
+            line = line.strip()
+
+            if len(line) < 8:
+                continue
+
+            lower = line.lower()
+
+            if any(keyword in lower for keyword in cls.PROJECT_KEYWORDS):
+                projects.append(line)
+
+        return list(dict.fromkeys(projects))
+
+    @classmethod
+    def extract_experience(cls, text: str):
+
+        text_lower = text.lower()
+
+        for keyword in cls.EXPERIENCE_KEYWORDS:
+
+            if keyword in text_lower:
+                return "Experience Found"
+
+        return ""

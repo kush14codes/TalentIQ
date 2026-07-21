@@ -6,6 +6,7 @@ from fastapi import APIRouter, File, Form, HTTPException, UploadFile
 from app.services.parser import ResumeParser
 from app.services.resume_engine import ResumeEngine
 from app.services.ats_engine import ATSEngine
+from app.services.general_ats_engine import GeneralATSEngine
 from app.services.recommendation_engine import RecommendationEngine
 from app.services.llm_engine import LLMEngine
 
@@ -93,14 +94,8 @@ async def upload_resume(
 @router.post("/analyze")
 async def analyze_resume(
     file: UploadFile = File(...),
-    job_description: str = Form(...)
+    job_description: str = Form("")
 ):
-    if not job_description.strip():
-        raise HTTPException(
-            status_code=400,
-            detail="Job description cannot be empty."
-        )
-
     contents = await file.read()
 
     validate_resume(file, contents)
@@ -123,44 +118,84 @@ async def analyze_resume(
         is_resume=True
     )
 
-    jd_analysis = ResumeEngine.process(
-        job_description,
-        is_resume=False
+    candidate = {
+        "name": resume_analysis.get("name"),
+        "email": resume_analysis.get("email"),
+        "phone": resume_analysis.get("phone"),
+    }
+
+    # =====================================================
+    # MODE 1 : SEMANTIC ATS (Resume + Job Description)
+    # =====================================================
+
+    if job_description.strip():
+
+        jd_analysis = ResumeEngine.process(
+            job_description,
+            is_resume=False
+        )
+
+        ats_result = ATSEngine.compare(
+            resume_analysis["skills"],
+            jd_analysis["skills"]
+        )
+
+        recommendations = RecommendationEngine.generate(
+            ats_score=ats_result["score"],
+            matched_skills=ats_result["matched_skills"],
+            missing_skills=ats_result["missing_skills"],
+            candidate=resume_analysis,
+        )
+
+        ai_analysis = LLMEngine.generate_complete_analysis(
+            candidate=candidate,
+            ats_score=ats_result["score"],
+            matched_skills=ats_result["matched_skills"],
+            missing_skills=ats_result["missing_skills"],
+            mode="semantic",
+        )
+
+        return {
+            "success": True,
+            "mode": "semantic",
+            "message": "Semantic ATS analysis completed successfully.",
+            "candidate": candidate,
+            "resume_skills": resume_analysis["skills"],
+            "job_skills": jd_analysis["skills"],
+            "ats": ats_result,
+            "recommendations": recommendations,
+            "ai": ai_analysis.model_dump(),
+            "stored_filename": unique_filename
+        }
+
+    # =====================================================
+    # MODE 2 : GENERAL ATS (Resume Only)
+    # =====================================================
+
+    ats_result = GeneralATSEngine.evaluate(
+        resume_analysis,
+        resume_text
     )
 
-    ats_result = ATSEngine.compare(
-        resume_analysis["skills"],
-        jd_analysis["skills"]
-    )
-
-    recommendations = RecommendationEngine.generate(
-        ats_score=ats_result["score"],
-        matched_skills=ats_result["matched_skills"],
-        missing_skills=ats_result["missing_skills"],
-        candidate=resume_analysis,
-    )
+    recommendations = ats_result["weaknesses"] + [
+        f"Add missing section: {section}"
+        for section in ats_result["missing_sections"]
+    ]
 
     ai_analysis = LLMEngine.generate_complete_analysis(
-        candidate={
-            "name": resume_analysis.get("name"),
-            "email": resume_analysis.get("email"),
-            "phone": resume_analysis.get("phone"),
-        },
+        candidate=candidate,
         ats_score=ats_result["score"],
-        matched_skills=ats_result["matched_skills"],
-        missing_skills=ats_result["missing_skills"],
+        matched_skills=resume_analysis["skills"],
+        missing_skills=[],
+        mode="general",
     )
 
     return {
         "success": True,
-        "message": "Resume analyzed successfully.",
-        "candidate": {
-            "name": resume_analysis.get("name"),
-            "email": resume_analysis.get("email"),
-            "phone": resume_analysis.get("phone"),
-        },
+        "mode": "general",
+        "message": "General ATS analysis completed successfully.",
+        "candidate": candidate,
         "resume_skills": resume_analysis["skills"],
-        "job_skills": jd_analysis["skills"],
         "ats": ats_result,
         "recommendations": recommendations,
         "ai": ai_analysis.model_dump(),

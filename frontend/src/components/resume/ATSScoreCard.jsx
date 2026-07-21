@@ -1,6 +1,7 @@
 import { BarChart3 } from "lucide-react";
 
-function ATSScoreCard({ score }) {
+function ATSScoreCard({ score, mode }) {
+
   const getScoreColor = () => {
     if (score >= 80) {
       return "text-green-400";
@@ -26,6 +27,21 @@ function ATSScoreCard({ score }) {
   };
 
   const getStatus = () => {
+
+    if (mode === "general") {
+
+      if (score >= 80) {
+        return "Excellent Resume";
+      }
+
+      if (score >= 60) {
+        return "Good Resume";
+      }
+
+      return "Needs Resume Improvement";
+
+    }
+
     if (score >= 80) {
       return "Excellent Match";
     }
@@ -35,6 +51,19 @@ function ATSScoreCard({ score }) {
     }
 
     return "Needs Improvement";
+
+  };
+
+  const getTitle = () => {
+    return mode === "general"
+      ? "General ATS Score"
+      : "Semantic ATS Score";
+  };
+
+  const getProgressLabel = () => {
+    return mode === "general"
+      ? "Resume Score"
+      : "Match Score";
   };
 
   return (
@@ -50,7 +79,7 @@ function ATSScoreCard({ score }) {
         />
 
         <h2 className="text-2xl font-bold text-white">
-          ATS Compatibility Score
+          {getTitle()}
         </h2>
 
       </div>
@@ -77,7 +106,7 @@ function ATSScoreCard({ score }) {
 
         <div className="mb-2 flex justify-between text-sm text-slate-400">
 
-          <span>Match Score</span>
+          <span>{getProgressLabel()}</span>
 
           <span>{score}%</span>
 

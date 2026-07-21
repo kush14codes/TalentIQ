@@ -2,7 +2,6 @@
 Centralized prompt templates for TalentIQ.
 """
 
-
 import json
 
 
@@ -14,7 +13,53 @@ class PromptTemplates:
         ats_score,
         matched_skills,
         missing_skills,
+        mode="semantic",
     ):
+
+        if mode == "semantic":
+
+            context = f"""
+Matched Skills:
+{", ".join(matched_skills)}
+
+Missing Skills:
+{", ".join(missing_skills)}
+
+You are comparing this candidate against a specific Job Description.
+
+Evaluate:
+- Job fit
+- Missing skills
+- Strengths
+- Weaknesses
+- Hiring recommendation
+"""
+
+        else:
+
+            context = f"""
+Technical Skills:
+{", ".join(matched_skills)}
+
+There is NO Job Description.
+
+Evaluate the overall quality of the resume.
+
+Do NOT invent missing job-specific skills.
+
+Instead evaluate:
+
+- Resume quality
+- ATS friendliness
+- Technical profile
+- Skills section
+- Project quality
+- Resume writing
+- Resume completeness
+
+Base your review ONLY on the candidate information provided.
+"""
+
         return f"""
 You are an expert Technical Recruiter and ATS Specialist.
 
@@ -26,11 +71,7 @@ Candidate Information:
 ATS Score:
 {ats_score}
 
-Matched Skills:
-{", ".join(matched_skills)}
-
-Missing Skills:
-{", ".join(missing_skills)}
+{context}
 
 Return ONLY valid JSON.
 
