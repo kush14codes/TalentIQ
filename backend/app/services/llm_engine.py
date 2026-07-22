@@ -1,5 +1,7 @@
 import json
+import logging
 import os
+import time
 
 from dotenv import load_dotenv
 from groq import Groq
@@ -9,6 +11,14 @@ from app.services.prompts import PromptTemplates
 
 # Load environment variables
 load_dotenv()
+
+logger = logging.getLogger("llm_engine")
+
+# Client-level timeout (seconds). This is a second line of defense
+# alongside the asyncio.wait_for() wrapper in the resume router --
+# if Groq itself hangs, the client library will raise before our
+# outer timeout even needs to fire.
+GROQ_CLIENT_TIMEOUT = 15.0
 
 
 class LLMEngine:
@@ -35,7 +45,10 @@ class LLMEngine:
                     "GROQ_API_KEY not found in environment variables."
                 )
 
-            cls._client = Groq(api_key=api_key)
+            cls._client = Groq(
+                api_key=api_key,
+                timeout=GROQ_CLIENT_TIMEOUT,
+            )
 
         return cls._client
 
@@ -47,18 +60,28 @@ class LLMEngine:
 
         client = cls.get_client()
 
-        response = client.chat.completions.create(
-            model="llama-3.3-70b-versatile",
-            messages=[
-                {
-                    "role": "user",
-                    "content": prompt,
-                }
-            ],
-            temperature=0.2,
-            response_format={"type": "json_object"},
-            max_tokens=1500,
-        )
+        t0 = time.monotonic()
+
+        try:
+            response = client.chat.completions.create(
+                model="llama-3.3-70b-versatile",
+                messages=[
+                    {
+                        "role": "user",
+                        "content": prompt,
+                    }
+                ],
+                temperature=0.2,
+                response_format={"type": "json_object"},
+                max_tokens=1500,
+            )
+        except Exception:
+            logger.exception(
+                f"Groq call failed after {time.monotonic() - t0:.2f}s"
+            )
+            raise
+
+        logger.info(f"Groq call succeeded in {time.monotonic() - t0:.2f}s")
 
         return response.choices[0].message.content
 

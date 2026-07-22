@@ -1,8 +1,13 @@
+import logging
 import os
+import time
 
 from huggingface_hub import login
 from sentence_transformers import SentenceTransformer
 from sklearn.metrics.pairwise import cosine_similarity
+
+
+logger = logging.getLogger("embedding_engine")
 
 
 class EmbeddingEngine:
@@ -16,24 +21,44 @@ class EmbeddingEngine:
     @classmethod
     def get_model(cls):
         """
-        Lazy loads the embedding model.
+        Lazy loads the embedding model (falls back path — normally
+        `preload()` should already have loaded this at app startup).
         """
 
         if cls._model is None:
-
-            token = os.getenv("HF_TOKEN")
-
-            if token:
-                login(
-                    token=token,
-                    add_to_git_credential=False
-                )
-
-            cls._model = SentenceTransformer(
-                "sentence-transformers/all-MiniLM-L6-v2"
-            )
+            cls._load_model()
 
         return cls._model
+
+    @classmethod
+    def _load_model(cls):
+        t0 = time.monotonic()
+
+        token = os.getenv("HF_TOKEN")
+
+        if token:
+            login(
+                token=token,
+                add_to_git_credential=False
+            )
+
+        cls._model = SentenceTransformer(
+            "sentence-transformers/all-MiniLM-L6-v2"
+        )
+
+        logger.info(
+            f"SentenceTransformer loaded in {time.monotonic() - t0:.2f}s"
+        )
+
+    @classmethod
+    def preload(cls):
+        """
+        Call this once at app startup so the model download/init cost
+        is paid during boot, not during a user's first request.
+        """
+
+        if cls._model is None:
+            cls._load_model()
 
     @classmethod
     def generate_embeddings(cls, texts):
